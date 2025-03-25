@@ -2,41 +2,24 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { useNavigate } from 'react-router-dom';
 
 interface ProgressIndicatorProps {
   steps: string[];
   currentStep: number;
   className?: string;
-  routes?: string[]; // Added routes prop
 }
 
 const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({ 
   steps, 
   currentStep, 
-  className,
-  routes = [] // Default to empty array if not provided
+  className 
 }) => {
-  const navigate = useNavigate();
-
-  const handleStepClick = (index: number) => {
-    if (routes && routes[index]) {
-      navigate(routes[index]);
-    }
-  };
-
   return (
     <div className={cn('flex items-center justify-between w-full my-8', className)}>
       {steps.map((step, index) => (
         <React.Fragment key={index}>
           {/* Step circle */}
-          <div 
-            className={cn(
-              "flex flex-col items-center",
-              routes && routes[index] ? "cursor-pointer" : ""
-            )}
-            onClick={() => handleStepClick(index)}
-          >
+          <div className="flex flex-col items-center">
             <motion.div 
               className={cn(
                 'w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium',
