@@ -1,11 +1,11 @@
 
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
-type ForecastType = 'Replenishment' | 'New Product Launch' | 'Promotions' | 'Inventory Optimization';
+export type ForecastType = 'Replenishment' | 'New Product Launch' | 'Promotions' | 'Inventory Optimization';
 
 interface ForecastContextType {
   selectedGoals: ForecastType[];
-  setSelectedGoals: (goals: ForecastType[]) => void;
+  setSelectedGoals: React.Dispatch<React.SetStateAction<ForecastType[]>>;
   uploadedFile: File | null;
   setUploadedFile: (file: File | null) => void;
   uploadStatus: 'idle' | 'uploading' | 'success' | 'error';

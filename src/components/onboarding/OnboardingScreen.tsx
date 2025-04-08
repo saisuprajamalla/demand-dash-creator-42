@@ -5,7 +5,7 @@ import { ChartBar, Database, Brain } from 'lucide-react';
 import AnimatedCard from '../ui/AnimatedCard';
 import GlassMorphCard from '../ui/GlassMorphCard';
 import { staggerContainer, staggerItem } from '@/utils/transitions';
-import { useForecast } from '@/context/ForecastContext';
+import { useForecast, ForecastType } from '@/context/ForecastContext';
 import { toast } from 'sonner';
 
 const tasks = [
@@ -52,9 +52,9 @@ const OnboardingScreen: React.FC = () => {
 
   const handleGoalToggle = (goal: string) => {
     setSelectedGoals(prev => 
-      prev.includes(goal as any) 
-        ? prev.filter(g => g !== goal) 
-        : [...prev, goal as any]
+      prev.includes(goal as ForecastType) 
+        ? prev.filter(g => g !== goal as ForecastType) 
+        : [...prev, goal as ForecastType]
     );
   };
 
@@ -192,7 +192,7 @@ const OnboardingScreen: React.FC = () => {
                   type="button"
                   onClick={() => handleGoalToggle(goal)}
                   className={`px-4 py-2 rounded-md text-sm ${
-                    selectedGoals.includes(goal as any) 
+                    selectedGoals.includes(goal as ForecastType) 
                       ? 'bg-primary text-white' 
                       : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
                   }`}
