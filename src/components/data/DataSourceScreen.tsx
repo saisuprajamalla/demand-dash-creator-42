@@ -46,9 +46,12 @@ const DataSourceScreen: React.FC = () => {
     }
   };
 
-  // Helper function to get the primary forecast type
-  const getPrimaryForecastType = () => {
-    return selectedGoals.length > 0 ? selectedGoals[0] : 'Default';
+  // Get the selected forecast type
+  const getSelectedForecastType = () => {
+    if (selectedGoals.length > 0) {
+      return selectedGoals[0];
+    }
+    return 'Default';
   };
 
   return (
@@ -171,7 +174,7 @@ const DataSourceScreen: React.FC = () => {
                     </span>
                   </div>
                   <p className="text-xs text-green-600">
-                    Forecast Type: {getPrimaryForecastType()}
+                    Forecast Type: {getSelectedForecastType()}
                   </p>
                 </div>
               )}

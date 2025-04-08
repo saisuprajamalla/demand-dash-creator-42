@@ -74,8 +74,8 @@ const FileUploadDialog: React.FC<FileUploadDialogProps> = ({ isOpen, onClose }) 
   const uploadFileToAPI = async (file: File) => {
     return new Promise<void>((resolve, reject) => {
       setTimeout(() => {
-        // Get the primary forecasting goal for API
-        const forecastType = selectedGoals.length > 0 ? selectedGoals[0] : 'Replenishment';
+        // Use the first selected goal as the forecast type
+        const forecastType = selectedGoals.length > 0 ? selectedGoals[0] : 'Default';
         
         console.log('Uploading file to API:', {
           fileName: file.name,
