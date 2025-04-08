@@ -78,15 +78,15 @@ const OnboardingScreen: React.FC = () => {
   };
 
   const handleContinue = () => {
-    if (isFormValid()) {
+    //if (isFormValid()) {
       // Log the selected goals before navigation
       console.log("Selected goals before navigation:", selectedGoals);
       console.log("LocalStorage value:", localStorage.getItem('forecastGoals'));
       toast.success('Forecast settings saved successfully!');
       navigate('/data-source');
-    } else {
-      toast.error('Please fill out all required fields');
-    }
+    //} else {
+    //  toast.error('Please fill out all required fields');
+    //}
   };
 
   const isFormValid = () => {
