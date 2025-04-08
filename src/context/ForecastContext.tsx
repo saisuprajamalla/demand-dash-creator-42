@@ -1,5 +1,5 @@
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 
 export type ForecastType = 'Replenishment' | 'New Product Launch' | 'Promotions' | 'Inventory Optimization';
 
@@ -25,10 +25,20 @@ export const useForecast = () => {
 };
 
 export const ForecastProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [selectedGoals, setSelectedGoals] = useState<ForecastType[]>([]);
+  // Initialize state from localStorage if available
+  const [selectedGoals, setSelectedGoals] = useState<ForecastType[]>(() => {
+    const savedGoals = localStorage.getItem('forecastGoals');
+    return savedGoals ? JSON.parse(savedGoals) : [];
+  });
+  
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [uploadStatus, setUploadStatus] = useState<'idle' | 'uploading' | 'success' | 'error'>('idle');
   const [uploadError, setUploadError] = useState<string | null>(null);
+
+  // Persist selectedGoals to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('forecastGoals', JSON.stringify(selectedGoals));
+  }, [selectedGoals]);
 
   return (
     <ForecastContext.Provider value={{

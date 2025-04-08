@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { Database, Upload, FileSpreadsheet, ShoppingBag, ArrowLeft, Download, CheckCircle } from 'lucide-react';
@@ -17,6 +17,10 @@ const DataSourceScreen: React.FC = () => {
   const { uploadedFile, uploadStatus, selectedGoals } = useForecast();
   const [selectedSource, setSelectedSource] = useState<string | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  
+  useEffect(() => {
+    console.log("DataSourceScreen - selectedGoals:", selectedGoals);
+  }, [selectedGoals]);
   
   const handleSourceSelect = (source: string) => {
     setSelectedSource(source);
@@ -48,7 +52,7 @@ const DataSourceScreen: React.FC = () => {
 
   // Get the selected forecast type
   const getSelectedForecastType = () => {
-    if (selectedGoals.length > 0) {
+    if (selectedGoals && selectedGoals.length > 0) {
       return selectedGoals[0];
     }
     return 'Default';

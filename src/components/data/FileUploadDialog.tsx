@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Upload, X, FileText, AlertCircle, CheckCircle } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -21,6 +21,10 @@ const FileUploadDialog: React.FC<FileUploadDialogProps> = ({ isOpen, onClose }) 
     setUploadError,
     uploadedFile 
   } = useForecast();
+
+  useEffect(() => {
+    console.log("FileUploadDialog - selectedGoals:", selectedGoals);
+  }, [selectedGoals]);
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
@@ -74,8 +78,8 @@ const FileUploadDialog: React.FC<FileUploadDialogProps> = ({ isOpen, onClose }) 
   const uploadFileToAPI = async (file: File) => {
     return new Promise<void>((resolve, reject) => {
       setTimeout(() => {
-        // Use the first selected goal as the forecast type
-        const forecastType = selectedGoals.length > 0 ? selectedGoals[0] : 'Default';
+        // Ensure we properly use the selected goal
+        const forecastType = selectedGoals && selectedGoals.length > 0 ? selectedGoals[0] : 'Default';
         
         console.log('Uploading file to API:', {
           fileName: file.name,

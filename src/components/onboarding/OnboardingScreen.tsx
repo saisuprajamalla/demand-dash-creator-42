@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { ChartBar, Database, Brain } from 'lucide-react';
@@ -46,20 +47,29 @@ const OnboardingScreen: React.FC = () => {
   const [shopifyPercent, setShopifyPercent] = useState('');
   const [wholesalePercent, setWholesalePercent] = useState('');
 
+  useEffect(() => {
+    console.log("OnboardingScreen - selectedGoals after setting:", selectedGoals);
+  }, [selectedGoals]);
+
   const handleTaskSelect = (taskId: string) => {
     setSelectedTask(taskId);
   };
 
   const handleGoalToggle = (goal: string) => {
+    const goalAsForecastType = goal as ForecastType;
     setSelectedGoals(prev => 
-      prev.includes(goal as ForecastType) 
-        ? prev.filter(g => g !== goal as ForecastType) 
-        : [...prev, goal as ForecastType]
+      prev.includes(goalAsForecastType) 
+        ? prev.filter(g => g !== goalAsForecastType) 
+        : [...prev, goalAsForecastType]
     );
+    // Log the operation for debugging
+    console.log(`Toggle goal: ${goal}, Is now selected: ${!selectedGoals.includes(goalAsForecastType)}`);
   };
 
   const handleContinue = () => {
     if (isFormValid()) {
+      // Log the selected goals before navigation
+      console.log("Selected goals before navigation:", selectedGoals);
       toast.success('Forecast settings saved successfully!');
       navigate('/data-source');
     } else {
