@@ -57,14 +57,11 @@ const OnboardingScreen: React.FC = () => {
 
   const handleGoalToggle = (goal: string) => {
     const goalAsForecastType = goal as ForecastType;
-    setSelectedGoals(prev => 
-      prev.includes(goalAsForecastType) 
-        ? prev.filter(g => g !== goalAsForecastType) 
-        : [...prev, goalAsForecastType]
-    );
-    // Log the operation for debugging
-    console.log(`Toggle goal: ${goal}, Is now selected: ${!selectedGoals.includes(goalAsForecastType)}`);
+    // Set the selectedGoals to a single-element array
+    setSelectedGoals([goalAsForecastType]);
+    console.log("Selected goal:", goalAsForecastType);
   };
+
 
   const handleContinue = () => {
     if (isFormValid()) {
