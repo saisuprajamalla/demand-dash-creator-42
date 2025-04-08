@@ -19,7 +19,17 @@ const DataSourceScreen: React.FC = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   
   useEffect(() => {
-    console.log("DataSourceScreen - selectedGoals:", selectedGoals);
+    console.log("DataSourceScreen - Component mounted");
+    console.log("DataSourceScreen - selectedGoals from context:", selectedGoals);
+    console.log("DataSourceScreen - localStorage value:", localStorage.getItem('forecastGoals'));
+    
+    // Try to access the global variable
+    console.log("Global selectedForecastGoals:", (window as any).selectedForecastGoals);
+  }, []);
+  
+  // A separate useEffect to log when selectedGoals changes
+  useEffect(() => {
+    console.log("DataSourceScreen - selectedGoals updated:", selectedGoals);
   }, [selectedGoals]);
   
   const handleSourceSelect = (source: string) => {
@@ -43,20 +53,51 @@ const DataSourceScreen: React.FC = () => {
     }
     
     // If a file was uploaded and the forecast type is set, proceed
-    if ((selectedSource !== 'csv' || (uploadedFile && selectedGoals.length > 0)) && uploadStatus !== 'uploading') {
+    if ((selectedSource !== 'csv' || (uploadedFile && getSelectedForecastType() !== 'Default')) && uploadStatus !== 'uploading') {
       navigate('/model-selection');
     } else {
       toast.error('Please complete all required steps first');
     }
   };
 
-  // Get the selected forecast type
+  // Get the selected forecast type with safer implementation
   const getSelectedForecastType = () => {
+    // First check context
     if (selectedGoals && selectedGoals.length > 0) {
       return selectedGoals[0];
     }
+    
+    // If not in context, check localStorage directly as fallback
+    try {
+      const savedGoals = localStorage.getItem('forecastGoals');
+      if (savedGoals) {
+        const parsed = JSON.parse(savedGoals);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed[0];
+        }
+      }
+    } catch (error) {
+      console.error("Error parsing localStorage forecast goals:", error);
+    }
+    
+    // Last fallback to debug value if available
+    const debugValue = localStorage.getItem('debug_selectedGoal');
+    if (debugValue) {
+      return debugValue;
+    }
+    
+    // Final fallback
     return 'Default';
   };
+
+  // Debug div
+  const debugDiv = (
+    <div className="mt-4 p-2 bg-gray-100 rounded-md">
+      <p><strong>Debug - Selected Goals:</strong> {JSON.stringify(selectedGoals)}</p>
+      <p><strong>localStorage:</strong> {localStorage.getItem('forecastGoals')}</p>
+      <p><strong>getSelectedForecastType():</strong> {getSelectedForecastType()}</p>
+    </div>
+  );
 
   return (
     <div className="container max-w-5xl px-4 py-12 mx-auto">
@@ -217,6 +258,9 @@ const DataSourceScreen: React.FC = () => {
           </div>
         </div>
       </GlassMorphCard>
+
+      {/* Debug div - can be removed in production */}
+      {debugDiv}
       
       <div className="flex justify-between">
         <motion.button

@@ -23,7 +23,13 @@ const FileUploadDialog: React.FC<FileUploadDialogProps> = ({ isOpen, onClose }) 
   } = useForecast();
 
   useEffect(() => {
+    console.log("FileUploadDialog - Component mounted");
     console.log("FileUploadDialog - selectedGoals:", selectedGoals);
+    console.log("FileUploadDialog - localStorage value:", localStorage.getItem('forecastGoals'));
+  }, []);
+
+  useEffect(() => {
+    console.log("FileUploadDialog - selectedGoals updated:", selectedGoals);
   }, [selectedGoals]);
 
   const handleDrag = (e: React.DragEvent) => {
@@ -74,12 +80,42 @@ const FileUploadDialog: React.FC<FileUploadDialogProps> = ({ isOpen, onClose }) 
       });
   };
 
+  // Get the selected forecast type with safer implementation
+  const getSelectedForecastType = () => {
+    // First check context
+    if (selectedGoals && selectedGoals.length > 0) {
+      return selectedGoals[0];
+    }
+    
+    // If not in context, check localStorage directly as fallback
+    try {
+      const savedGoals = localStorage.getItem('forecastGoals');
+      if (savedGoals) {
+        const parsed = JSON.parse(savedGoals);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed[0];
+        }
+      }
+    } catch (error) {
+      console.error("Error parsing localStorage forecast goals:", error);
+    }
+    
+    // Last fallback to debug value if available
+    const debugValue = localStorage.getItem('debug_selectedGoal');
+    if (debugValue) {
+      return debugValue;
+    }
+    
+    // Final fallback
+    return 'Default';
+  };
+
   // Mock API call function that includes the selected forecast type
   const uploadFileToAPI = async (file: File) => {
     return new Promise<void>((resolve, reject) => {
       setTimeout(() => {
-        // Ensure we properly use the selected goal
-        const forecastType = selectedGoals && selectedGoals.length > 0 ? selectedGoals[0] : 'Default';
+        // Get the current forecast type from context or localStorage
+        const forecastType = getSelectedForecastType();
         
         console.log('Uploading file to API:', {
           fileName: file.name,
@@ -122,6 +158,15 @@ const FileUploadDialog: React.FC<FileUploadDialogProps> = ({ isOpen, onClose }) 
     setUploadError(null);
   };
 
+  // Debug div - can be removed in production
+  const debugDiv = (
+    <div className="mt-4 p-2 bg-gray-100 rounded-md text-xs">
+      <p><strong>Selected Goals:</strong> {JSON.stringify(selectedGoals)}</p>
+      <p><strong>localStorage:</strong> {localStorage.getItem('forecastGoals')}</p>
+      <p><strong>getSelectedForecastType():</strong> {getSelectedForecastType()}</p>
+    </div>
+  );
+
   return (
     <Dialog open={isOpen} onOpenChange={handleDialogOpen}>
       <DialogContent className="sm:max-w-md">
@@ -157,6 +202,9 @@ const FileUploadDialog: React.FC<FileUploadDialogProps> = ({ isOpen, onClose }) 
                     {uploadedFile?.name}
                   </span>
                 </div>
+                <p className="text-sm mt-2 font-medium">
+                  Forecast Type: <span className="text-primary">{getSelectedForecastType()}</span>
+                </p>
                 <Button 
                   onClick={handleRetry} 
                   variant="outline" 
@@ -197,6 +245,9 @@ const FileUploadDialog: React.FC<FileUploadDialogProps> = ({ isOpen, onClose }) 
               </>
             )}
           </div>
+
+          {/* Debug data - remove in production */}
+          {debugDiv}
 
           <div className="text-xs text-gray-500">
             <p>Your file should include:</p>

@@ -48,7 +48,15 @@ const OnboardingScreen: React.FC = () => {
   const [wholesalePercent, setWholesalePercent] = useState('');
 
   useEffect(() => {
-    console.log("OnboardingScreen - selectedGoals after setting:", selectedGoals);
+    console.log("OnboardingScreen initialized - selectedGoals:", selectedGoals);
+  }, []);
+
+  useEffect(() => {
+    console.log("OnboardingScreen - selectedGoals after update:", selectedGoals);
+    // Add debug info directly to localStorage to verify it's being set
+    if (selectedGoals?.length > 0) {
+      localStorage.setItem('debug_selectedGoal', selectedGoals[0]);
+    }
   }, [selectedGoals]);
 
   const handleTaskSelect = (taskId: string) => {
@@ -57,16 +65,23 @@ const OnboardingScreen: React.FC = () => {
 
   const handleGoalToggle = (goal: string) => {
     const goalAsForecastType = goal as ForecastType;
+    console.log("Goal toggle clicked:", goalAsForecastType);
+    
     // Set the selectedGoals to a single-element array
     setSelectedGoals([goalAsForecastType]);
+    
+    // Double-check that localStorage is being updated by manually setting it here
+    localStorage.setItem('forecastGoals', JSON.stringify([goalAsForecastType]));
+    
     console.log("Selected goal:", goalAsForecastType);
+    console.log("LocalStorage after setting:", localStorage.getItem('forecastGoals'));
   };
-
 
   const handleContinue = () => {
     if (isFormValid()) {
       // Log the selected goals before navigation
       console.log("Selected goals before navigation:", selectedGoals);
+      console.log("LocalStorage value:", localStorage.getItem('forecastGoals'));
       toast.success('Forecast settings saved successfully!');
       navigate('/data-source');
     } else {
@@ -82,6 +97,14 @@ const OnboardingScreen: React.FC = () => {
       selectedGoals.length > 0
     );
   };
+
+  // Add this debug div for development visibility
+  const debugDiv = (
+    <div className="mt-4 p-2 bg-gray-100 rounded-md">
+      <p><strong>Debug - Selected Goals:</strong> {JSON.stringify(selectedGoals)}</p>
+      <p><strong>localStorage:</strong> {localStorage.getItem('forecastGoals')}</p>
+    </div>
+  );
 
   return (
     <div className="container max-w-5xl px-4 py-12 mx-auto">
@@ -197,7 +220,10 @@ const OnboardingScreen: React.FC = () => {
                 <button
                   key={goal}
                   type="button"
-                  onClick={() => handleGoalToggle(goal)}
+                  onClick={() => {
+                    console.log("Button clicked for:", goal);
+                    handleGoalToggle(goal);
+                  }}
                   className={`px-4 py-2 rounded-md text-sm ${
                     selectedGoals.includes(goal as ForecastType) 
                       ? 'bg-primary text-white' 
@@ -210,6 +236,9 @@ const OnboardingScreen: React.FC = () => {
             </div>
           </div>
         </div>
+        
+        {/* Debug element - can be removed in production */}
+        {debugDiv}
       </GlassMorphCard>
 
       <div className="flex justify-end">
