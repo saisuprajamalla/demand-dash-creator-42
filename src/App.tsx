@@ -11,6 +11,7 @@ import ModelSelectionScreen from "./components/models/ModelSelectionScreen";
 import ForecastSetupScreen from "./components/forecast/ForecastSetupScreen";
 import ConstraintsScreen from "./components/constraints/ConstraintsScreen";
 import { ForecastProvider } from "./context/ForecastContext";
+import OnboardingScreen from '@/pages/OnboardingScreen';
 
 const queryClient = new QueryClient();
 
