@@ -70,7 +70,7 @@ const FileUploadDialog: React.FC<FileUploadDialogProps> = ({ isOpen, onClose }) 
       });
   };
 
-  // Mock API call function
+  // Mock API call function that includes the selected forecast type
   const uploadFileToAPI = async (file: File) => {
     return new Promise<void>((resolve, reject) => {
       setTimeout(() => {
@@ -80,8 +80,19 @@ const FileUploadDialog: React.FC<FileUploadDialogProps> = ({ isOpen, onClose }) 
         console.log('Uploading file to API:', {
           fileName: file.name,
           fileSize: file.size,
-          forecastType,
+          forecastType, // This will be sent in the request body
         });
+        
+        // This is where you would construct a FormData object in a real implementation
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('forecastType', forecastType);
+        
+        // Example of how you might call a real API
+        // const response = await fetch('https://your-fastapi-url.com/upload', {
+        //   method: 'POST',
+        //   body: formData,
+        // });
         
         // Simulate API call success (95% of the time)
         if (Math.random() > 0.05) {
@@ -93,12 +104,22 @@ const FileUploadDialog: React.FC<FileUploadDialogProps> = ({ isOpen, onClose }) 
     });
   };
 
+  // Reset the file input when dialog is opened
+  const handleDialogOpen = (open: boolean) => {
+    // If the dialog is being closed and we're not in the middle of uploading
+    if (!open && uploadStatus !== 'uploading') {
+      onClose();
+    }
+  };
+
+  const handleRetry = () => {
+    setUploadStatus('idle');
+    setUploadedFile(null);
+    setUploadError(null);
+  };
+
   return (
-    <Dialog open={isOpen} onOpenChange={() => {
-      if (uploadStatus !== 'uploading') {
-        onClose();
-      }
-    }}>
+    <Dialog open={isOpen} onOpenChange={handleDialogOpen}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Upload CSV File</DialogTitle>
@@ -132,12 +153,19 @@ const FileUploadDialog: React.FC<FileUploadDialogProps> = ({ isOpen, onClose }) 
                     {uploadedFile?.name}
                   </span>
                 </div>
+                <Button 
+                  onClick={handleRetry} 
+                  variant="outline" 
+                  className="mt-4"
+                >
+                  Upload Another File
+                </Button>
               </div>
             ) : uploadStatus === 'error' ? (
               <div className="flex flex-col items-center py-4">
                 <AlertCircle className="h-12 w-12 text-red-500 mb-3" />
                 <p className="font-medium mb-2">Upload Failed</p>
-                <Button onClick={() => setUploadStatus('idle')} variant="outline">
+                <Button onClick={handleRetry} variant="outline">
                   Try Again
                 </Button>
               </div>

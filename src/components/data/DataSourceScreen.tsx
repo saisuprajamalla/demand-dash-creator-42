@@ -46,6 +46,11 @@ const DataSourceScreen: React.FC = () => {
     }
   };
 
+  // Helper function to get the primary forecast type
+  const getPrimaryForecastType = () => {
+    return selectedGoals.length > 0 ? selectedGoals[0] : 'Default';
+  };
+
   return (
     <div className="container max-w-5xl px-4 py-12 mx-auto">
       <ProgressIndicator steps={steps} currentStep={1} />
@@ -166,7 +171,7 @@ const DataSourceScreen: React.FC = () => {
                     </span>
                   </div>
                   <p className="text-xs text-green-600">
-                    Forecast Type: {selectedGoals.length > 0 ? selectedGoals[0] : 'Default'}
+                    Forecast Type: {getPrimaryForecastType()}
                   </p>
                 </div>
               )}
