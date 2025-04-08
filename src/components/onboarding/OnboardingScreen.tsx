@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
@@ -6,6 +5,8 @@ import { ChartBar, Database, Brain } from 'lucide-react';
 import AnimatedCard from '../ui/AnimatedCard';
 import GlassMorphCard from '../ui/GlassMorphCard';
 import { staggerContainer, staggerItem } from '@/utils/transitions';
+import { useForecast } from '@/context/ForecastContext';
+import { toast } from 'sonner';
 
 const tasks = [
   {
@@ -37,12 +38,13 @@ const forecastingGoals = ['Replenishment', 'New Product Launch', 'Promotions', '
 
 const OnboardingScreen: React.FC = () => {
   const navigate = useNavigate();
+  const { selectedGoals, setSelectedGoals } = useForecast();
+  
   const [selectedTask, setSelectedTask] = useState<string | null>(null);
   const [businessType, setBusinessType] = useState('');
   const [productLifecycle, setProductLifecycle] = useState('');
   const [shopifyPercent, setShopifyPercent] = useState('');
   const [wholesalePercent, setWholesalePercent] = useState('');
-  const [selectedGoals, setSelectedGoals] = useState<string[]>([]);
 
   const handleTaskSelect = (taskId: string) => {
     setSelectedTask(taskId);
@@ -50,14 +52,19 @@ const OnboardingScreen: React.FC = () => {
 
   const handleGoalToggle = (goal: string) => {
     setSelectedGoals(prev => 
-      prev.includes(goal) 
+      prev.includes(goal as any) 
         ? prev.filter(g => g !== goal) 
-        : [...prev, goal]
+        : [...prev, goal as any]
     );
   };
 
   const handleContinue = () => {
-    navigate('/data-source');
+    if (isFormValid()) {
+      toast.success('Forecast settings saved successfully!');
+      navigate('/data-source');
+    } else {
+      toast.error('Please fill out all required fields');
+    }
   };
 
   const isFormValid = () => {
@@ -185,7 +192,7 @@ const OnboardingScreen: React.FC = () => {
                   type="button"
                   onClick={() => handleGoalToggle(goal)}
                   className={`px-4 py-2 rounded-md text-sm ${
-                    selectedGoals.includes(goal) 
+                    selectedGoals.includes(goal as any) 
                       ? 'bg-primary text-white' 
                       : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
                   }`}

@@ -2,27 +2,28 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { Database, Upload, FileSpreadsheet, ShoppingBag, ArrowLeft, Download } from 'lucide-react';
+import { Database, Upload, FileSpreadsheet, ShoppingBag, ArrowLeft, Download, CheckCircle } from 'lucide-react';
 import GlassMorphCard from '../ui/GlassMorphCard';
 import ProgressIndicator from '../ui/ProgressIndicator';
 import { staggerContainer, staggerItem } from '@/utils/transitions';
+import FileUploadDialog from './FileUploadDialog';
+import { useForecast } from '@/context/ForecastContext';
+import { toast } from 'sonner';
 
 const steps = ["Onboarding", "Data Source", "Model Selection", "Forecast Setup", "Constraints", "Dashboard"];
 
 const DataSourceScreen: React.FC = () => {
   const navigate = useNavigate();
+  const { uploadedFile, uploadStatus, selectedGoals } = useForecast();
   const [selectedSource, setSelectedSource] = useState<string | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   
   const handleSourceSelect = (source: string) => {
     setSelectedSource(source);
     
-    // Simulate file upload if a file source is selected
-    if (source === 'csv' || source === 'excel') {
-      setIsUploading(true);
-      setTimeout(() => {
-        setIsUploading(false);
-      }, 2000);
+    // Open file upload dialog when CSV is selected
+    if (source === 'csv') {
+      setIsDialogOpen(true);
     }
   };
   
@@ -31,7 +32,18 @@ const DataSourceScreen: React.FC = () => {
   };
   
   const handleContinue = () => {
-    navigate('/model-selection');
+    // Validate that we have both a selected source and an uploaded file (for CSV)
+    if (selectedSource === 'csv' && !uploadedFile) {
+      toast.error('Please upload a CSV file first');
+      return;
+    }
+    
+    // If a file was uploaded and the forecast type is set, proceed
+    if ((selectedSource !== 'csv' || (uploadedFile && selectedGoals.length > 0)) && uploadStatus !== 'uploading') {
+      navigate('/model-selection');
+    } else {
+      toast.error('Please complete all required steps first');
+    }
   };
 
   return (
@@ -131,7 +143,7 @@ const DataSourceScreen: React.FC = () => {
                 </button>
               </div>
               
-              {isUploading && (
+              {uploadStatus === 'uploading' && (
                 <div className="bg-blue-50 p-4 rounded-lg mt-auto">
                   <div className="flex items-center mb-2">
                     <div className="mr-2 animate-pulse">
@@ -145,7 +157,21 @@ const DataSourceScreen: React.FC = () => {
                 </div>
               )}
               
-              {selectedSource === 'shopify' && (
+              {uploadStatus === 'success' && (
+                <div className="bg-green-50 p-4 rounded-lg mt-auto">
+                  <div className="flex items-center mb-2">
+                    <CheckCircle size={18} className="text-green-600 mr-2" />
+                    <span className="text-sm font-medium text-green-700">
+                      File uploaded successfully: {uploadedFile?.name}
+                    </span>
+                  </div>
+                  <p className="text-xs text-green-600">
+                    Forecast Type: {selectedGoals.length > 0 ? selectedGoals[0] : 'Default'}
+                  </p>
+                </div>
+              )}
+              
+              {selectedSource === 'shopify' && uploadStatus !== 'success' && uploadStatus !== 'uploading' && (
                 <div className="bg-blue-50 p-4 rounded-lg mt-auto">
                   <p className="text-sm text-blue-700">
                     <span className="font-medium">Connect your Shopify store:</span> You'll be prompted to authorize access to your store data.
@@ -194,13 +220,23 @@ const DataSourceScreen: React.FC = () => {
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
-          className={`btn-primary ${!selectedSource ? 'opacity-50 cursor-not-allowed' : ''}`}
-          disabled={!selectedSource}
+          className={`btn-primary ${
+            !selectedSource || (selectedSource === 'csv' && uploadStatus !== 'success')
+              ? 'opacity-50 cursor-not-allowed'
+              : ''
+          }`}
+          disabled={!selectedSource || (selectedSource === 'csv' && uploadStatus !== 'success')}
           onClick={handleContinue}
         >
           Continue to Model Selection
         </motion.button>
       </div>
+      
+      {/* File Upload Dialog */}
+      <FileUploadDialog 
+        isOpen={isDialogOpen} 
+        onClose={() => setIsDialogOpen(false)} 
+      />
     </div>
   );
 };
