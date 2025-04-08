@@ -38,6 +38,7 @@ const productLifecycles = ['Seasonal', 'Evergreen', 'Short Lifecycle'];
 const forecastingGoals = ['Replenishment', 'New Product Launch', 'Promotions', 'Inventory Optimization'];
 
 const OnboardingScreen: React.FC = () => {
+  console.log("OnboardingScreen function body executed");
   const navigate = useNavigate();
   const { selectedGoals, setSelectedGoals } = useForecast();
   
