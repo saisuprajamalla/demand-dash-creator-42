@@ -53,11 +53,11 @@ const DataSourceScreen: React.FC = () => {
     }
     
     // If a file was uploaded and the forecast type is set, proceed
-    if ((selectedSource !== 'csv' || (uploadedFile && getSelectedForecastType() !== 'Default')) && uploadStatus !== 'uploading') {
+    //if ((selectedSource !== 'csv' || (uploadedFile && getSelectedForecastType() !== 'Default')) && uploadStatus !== 'uploading') {
       navigate('/model-selection');
-    } else {
-      toast.error('Please complete all required steps first');
-    }
+    // } else {
+    //   toast.error('Please complete all required steps first');
+    // }
   };
 
   // Get the selected forecast type with safer implementation
