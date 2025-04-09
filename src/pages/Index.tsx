@@ -25,7 +25,8 @@ const Index = () => {
   };
 
   const handleContinue = () => {
-    navigate('/data-source');
+    // Changed this to navigate to the onboarding screen first
+    navigate('/onboarding');
   };
 
   return (
@@ -67,7 +68,7 @@ const Index = () => {
           <motion.div variants={staggerItem}>
             <GlassMorphCard 
               className="h-full"
-              onClick={() => handleCardClick('/data-source')}
+              onClick={() => handleCardClick('/onboarding')}
             >
               <div className="flex flex-col items-center text-center h-full">
                 <div className="w-16 h-16 bg-green-50 text-green-600 rounded-full flex items-center justify-center mb-4">
