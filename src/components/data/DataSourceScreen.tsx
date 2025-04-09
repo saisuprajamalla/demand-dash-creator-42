@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
@@ -24,10 +23,9 @@ const DataSourceScreen: React.FC = () => {
     console.log("DataSourceScreen - localStorage value:", localStorage.getItem('forecastGoals'));
     
     // Try to access the global variable
-    console.log("Global selectedForecastGoals:", (window as any).selectedForecastGoals);
+    console.log("Global selectedGoals:", window.selectedGoals);
   }, []);
   
-  // A separate useEffect to log when selectedGoals changes
   useEffect(() => {
     console.log("DataSourceScreen - selectedGoals updated:", selectedGoals);
   }, [selectedGoals]);
@@ -46,18 +44,8 @@ const DataSourceScreen: React.FC = () => {
   };
   
   const handleContinue = () => {
-    // Validate that we have both a selected source and an uploaded file (for CSV)
-    if (selectedSource === 'csv' && !uploadedFile) {
-      toast.error('Please upload a CSV file first');
-      return;
-    }
-    
-    // If a file was uploaded and the forecast type is set, proceed
-    //if ((selectedSource !== 'csv' || (uploadedFile && getSelectedForecastType() !== 'Default')) && uploadStatus !== 'uploading') {
-      navigate('/model-selection');
-    // } else {
-    //   toast.error('Please complete all required steps first');
-    // }
+    // Removed all validation conditions to ensure we can always proceed
+    navigate('/model-selection');
   };
 
   // Get the selected forecast type with safer implementation
@@ -80,6 +68,11 @@ const DataSourceScreen: React.FC = () => {
       console.error("Error parsing localStorage forecast goals:", error);
     }
     
+    // Check window object
+    if (window.selectedGoals && window.selectedGoals.length > 0) {
+      return window.selectedGoals[0];
+    }
+    
     // Last fallback to debug value if available
     const debugValue = localStorage.getItem('debug_selectedGoal');
     if (debugValue) {
@@ -96,6 +89,7 @@ const DataSourceScreen: React.FC = () => {
       <p><strong>Debug - Selected Goals:</strong> {JSON.stringify(selectedGoals)}</p>
       <p><strong>localStorage:</strong> {localStorage.getItem('forecastGoals')}</p>
       <p><strong>getSelectedForecastType():</strong> {getSelectedForecastType()}</p>
+      <p><strong>window.selectedGoals:</strong> {JSON.stringify(window.selectedGoals)}</p>
     </div>
   );
 
@@ -259,7 +253,7 @@ const DataSourceScreen: React.FC = () => {
         </div>
       </GlassMorphCard>
 
-      {/* Debug div - can be removed in production */}
+      {/* Debug div */}
       {debugDiv}
       
       <div className="flex justify-between">
@@ -276,12 +270,7 @@ const DataSourceScreen: React.FC = () => {
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
-          className={`btn-primary ${
-            !selectedSource || (selectedSource === 'csv' && uploadStatus !== 'success')
-              ? 'opacity-50 cursor-not-allowed'
-              : ''
-          }`}
-          disabled={!selectedSource || (selectedSource === 'csv' && uploadStatus !== 'success')}
+          className="btn-primary"
           onClick={handleContinue}
         >
           Continue to Model Selection

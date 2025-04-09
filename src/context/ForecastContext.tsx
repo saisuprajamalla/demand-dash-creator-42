@@ -1,6 +1,13 @@
 
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 
+// Augment the Window interface to include our global property
+declare global {
+  interface Window {
+    selectedGoals?: ForecastType[];
+  }
+}
+
 export type ForecastType = 'Replenishment' | 'New Product Launch' | 'Promotions' | 'Inventory Optimization';
 
 interface ForecastContextType {
@@ -60,8 +67,8 @@ export const ForecastProvider: React.FC<{ children: ReactNode }> = ({ children }
     console.log("ForecastProvider - persisting selectedGoals to localStorage:", selectedGoals);
     if (selectedGoals && selectedGoals.length > 0) {
       localStorage.setItem('forecastGoals', JSON.stringify(selectedGoals));
-      // Set a global variable for debugging
-      (window as any).selectedForecastGoals = selectedGoals;
+      // Set a global variable for accessing across components
+      window.selectedGoals = selectedGoals;
     }
   }, [selectedGoals]);
 
@@ -72,6 +79,8 @@ export const ForecastProvider: React.FC<{ children: ReactNode }> = ({ children }
     setSelectedGoals(newGoals);
     // Also set directly to localStorage for redundancy
     localStorage.setItem('forecastGoals', JSON.stringify(newGoals));
+    // Update global window property
+    window.selectedGoals = newGoals;
   };
 
   return (

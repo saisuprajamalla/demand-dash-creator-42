@@ -57,6 +57,7 @@ const OnboardingScreen: React.FC = () => {
     // Add debug info directly to localStorage to verify it's being set
     if (selectedGoals?.length > 0) {
       localStorage.setItem('debug_selectedGoal', selectedGoals[0]);
+      window.selectedGoals = selectedGoals; // Add to window object for global access
     }
   }, [selectedGoals]);
 
@@ -79,27 +80,15 @@ const OnboardingScreen: React.FC = () => {
   };
 
   const handleContinue = () => {
-    //if (isFormValid()) {
-      // Log the selected goals before navigation
-      console.log("Selected goals before navigation:", selectedGoals);
-      console.log("LocalStorage value:", localStorage.getItem('forecastGoals'));
-      toast.success('Forecast settings saved successfully!');
-      navigate('/data-source');
-    //} else {
-    //  toast.error('Please fill out all required fields');
-    //}
+    // Removed all validation conditions to ensure we can always proceed
+    // Log the selected goals before navigation
+    console.log("Selected goals before navigation:", selectedGoals);
+    console.log("LocalStorage value:", localStorage.getItem('forecastGoals'));
+    toast.success('Forecast settings saved successfully!');
+    navigate('/data-source');
   };
 
-  const isFormValid = () => {
-    return (
-      selectedTask && 
-      businessType && 
-      productLifecycle && 
-      selectedGoals.length > 0
-    );
-  };
-
-  // Add this debug div for development visibility
+  // Debug div for development visibility
   const debugDiv = (
     <div className="mt-4 p-2 bg-gray-100 rounded-md">
       <p><strong>Debug - Selected Goals:</strong> {JSON.stringify(selectedGoals)}</p>
@@ -238,7 +227,7 @@ const OnboardingScreen: React.FC = () => {
           </div>
         </div>
         
-        {/* Debug element - can be removed in production */}
+        {/* Debug element */}
         {debugDiv}
       </GlassMorphCard>
 
@@ -246,8 +235,7 @@ const OnboardingScreen: React.FC = () => {
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
-          className={`btn-primary ${!isFormValid() ? 'opacity-50 cursor-not-allowed' : ''}`}
-          disabled={!isFormValid()}
+          className="btn-primary"
           onClick={handleContinue}
         >
           Continue to Data Source

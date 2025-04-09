@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Upload, X, FileText, AlertCircle, CheckCircle } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
@@ -26,6 +25,7 @@ const FileUploadDialog: React.FC<FileUploadDialogProps> = ({ isOpen, onClose }) 
     console.log("FileUploadDialog - Component mounted");
     console.log("FileUploadDialog - selectedGoals:", selectedGoals);
     console.log("FileUploadDialog - localStorage value:", localStorage.getItem('forecastGoals'));
+    console.log("FileUploadDialog - window.selectedGoals:", window.selectedGoals);
   }, []);
 
   useEffect(() => {
@@ -100,6 +100,11 @@ const FileUploadDialog: React.FC<FileUploadDialogProps> = ({ isOpen, onClose }) 
       console.error("Error parsing localStorage forecast goals:", error);
     }
     
+    // Check window object
+    if (window.selectedGoals && window.selectedGoals.length > 0) {
+      return window.selectedGoals[0];
+    }
+    
     // Last fallback to debug value if available
     const debugValue = localStorage.getItem('debug_selectedGoal');
     if (debugValue) {
@@ -158,12 +163,13 @@ const FileUploadDialog: React.FC<FileUploadDialogProps> = ({ isOpen, onClose }) 
     setUploadError(null);
   };
 
-  // Debug div - can be removed in production
+  // Debug div
   const debugDiv = (
     <div className="mt-4 p-2 bg-gray-100 rounded-md text-xs">
       <p><strong>Selected Goals:</strong> {JSON.stringify(selectedGoals)}</p>
       <p><strong>localStorage:</strong> {localStorage.getItem('forecastGoals')}</p>
       <p><strong>getSelectedForecastType():</strong> {getSelectedForecastType()}</p>
+      <p><strong>window.selectedGoals:</strong> {JSON.stringify(window.selectedGoals)}</p>
     </div>
   );
 
@@ -246,7 +252,7 @@ const FileUploadDialog: React.FC<FileUploadDialogProps> = ({ isOpen, onClose }) 
             )}
           </div>
 
-          {/* Debug data - remove in production */}
+          {/* Debug data */}
           {debugDiv}
 
           <div className="text-xs text-gray-500">
@@ -271,7 +277,6 @@ const FileUploadDialog: React.FC<FileUploadDialogProps> = ({ isOpen, onClose }) 
           
           <Button 
             variant="default"
-            disabled={uploadStatus !== 'success'}
             onClick={onClose}
           >
             Done

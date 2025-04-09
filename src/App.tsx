@@ -4,7 +4,6 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import DataSourceScreen from "./components/data/DataSourceScreen";
 import ModelSelectionScreen from "./components/models/ModelSelectionScreen";
@@ -23,8 +22,8 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/onboarding" element={<OnboardingScreen />} />
+            {/* Making OnboardingScreen the home page */}
+            <Route path="/" element={<OnboardingScreen />} />
             <Route path="/data-source" element={<DataSourceScreen />} />
             <Route path="/model-selection" element={<ModelSelectionScreen />} />
             <Route path="/forecast-setup" element={<ForecastSetupScreen />} />
